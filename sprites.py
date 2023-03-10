@@ -118,44 +118,35 @@ class Player(Sprite):
     def inbounds(self):
         global wrap_around
 
-        if (self.rect.x + PLAYER_WIDTH) > WIDTH:
-            print(" I am off the right")
-            self.pos.x = 0
-            self_remainder = int((self.rect.x + PLAYER_WIDTH) - WIDTH)
-            # Sprite.__init__(self)
-  
-
-            wrap_around = True
+        # if (self.rect.x + PLAYER_WIDTH) > WIDTH:
+        #     print(" I am off the right")
+        #     self.pos.x = 0
+        #     self_remainder = int((self.rect.x + PLAYER_WIDTH) % WIDTH)
+        #     print(f"self remainder is {self_remainder}")
+        #     # Sprite.__init__(self)
+        #     wrap_around = True
 
         if self.rect.x < 0:
             print("I am off the left")
+            self_remainder = int(PLAYER_WIDTH % ((self.rect.x + PLAYER_WIDTH) % WIDTH))
+            print(f"self remainder is {self_remainder}")
             self.pos.x = WIDTH
             print(f"x posItions is {self.rect.x}")
-        #     Sprite.__init__(self)
-        #     self.image_wrap = pg.Surface() 
-        #     print(self.image_wrap)
-        #     self.image_wrap.fill(BLACK)
-        #     wrap_around = True
 
         if self.rect.y + PLAYER_HEIGHT > HEIGHT:
             print("I am off the bottom of the screen")
+            self_remainder = int((self.rect.y + PLAYER_HEIGHT) % HEIGHT)
+            print(f"self remainder is {self_remainder}")
             self.pos.y = 0
             print(f"y posItions is {self.rect.y}")
-        #     Sprite.__init__(self)
-        #     self.image_wrap = pg.Surface() 
-        #     print(self.image_wrap)
-        #     self.image_wrap.fill(BLACK)
-        #     wrap_around = True
 
-        if (self.rect.y) < 0:
-            print("I am off the top of the screen")
-            self.pos.y = HEIGHT
-            print(f"y posItions is {self.rect.y}")
-        #     Sprite.__init__(self)
-        #     self.image_wrap = pg.Surface() 
-        #     print(self.image_wrap)
-        #     self.image_wrap.fill(BLACK)
-        #     wrap_around = True
+        # if (self.rect.y) < 0:
+        #     print("I am off the top of the screen")
+        #     self_remainder = int(PLAYER_HEIGHT % ((self.rect.y + PLAYER_HEIGHT) % HEIGHT))
+        #     print(f"self remainder is {self_remainder}")
+        #     self.pos.y = HEIGHT
+        #     print(f"y posItions is {self.rect.y}")
+
         # ///////////////////////////////////////////////////////
         
         # if wrap_around:
