@@ -12,37 +12,38 @@ wrap_around = False
 
 # Player wrap class
 
-'''class Player_Wrap(Sprite):
-    def __init__(self):
-        if (self.rect.x + PLAYER_WIDTH) > WIDTH:
-            print(" I am off the right")
-            self_remainder = int((self.rect.x + PLAYER_WIDTH) - WIDTH)
-            Sprite.__init__(self)
-            self.image = pg.Surface((self_remainder,50))
-            self.image.fill(BLACK)
-            self.rect = self.image.get_rect()
-            self.rect.center = (WIDTH/2, HEIGHT/2)
-            self.pos = vec(WIDTH/2, HEIGHT/2)
+# class Player_Wrap(Sprite):
+    # def __init__(self):
+    #     if (self.rect.x + PLAYER_WIDTH) > WIDTH:
+    #         print(" I am off the right")
+    #         self_remainder = int((self.rect.x + PLAYER_WIDTH) - WIDTH)
+    #         Sprite.__init__(self)
+    #         self.image = pg.Surface((self_remainder,50))
+    #         self.image.fill(BLACK)
+    #         self.rect = self.image.get_rect()
+    #         self.rect.center = (WIDTH/2, HEIGHT/2)
+    #         self.pos = vec(WIDTH/2, HEIGHT/2)
 
-        if self.rect.x < 0:
-            print("I am off the left")
-            self_remainder = int((self.rect.x + PLAYER_WIDTH) - WIDTH)
-            print(" I am off the right")
-            self_remainder = int((self.rect.x + PLAYER_WIDTH) - WIDTH)
-            Sprite.__init__(self)
-            self.image = pg.Surface((self_remainder,50))
-            self.image.fill(BLACK)
-            self.rect = self.image.get_rect()
-            self.rect.center = (WIDTH/2, HEIGHT/2)
-            self.pos = vec(WIDTH/2, HEIGHT/2)
+    #     if self.rect.x < 0:
+    #         print("I am off the left")
+    #         self_remainder = int((self.rect.x + PLAYER_WIDTH) - WIDTH)
+    #         print(" I am off the right")
+    #         self_remainder = int((self.rect.x + PLAYER_WIDTH) - WIDTH)
+    #         Sprite.__init__(self)
+    #         self.image = pg.Surface((self_remainder,50))
+    #         self.image.fill(BLACK)
+    #         self.rect = self.image.get_rect()
+    #         self.rect.center = (WIDTH/2, HEIGHT/2)
+    #         self.pos = vec(WIDTH/2, HEIGHT/2)
 
-        if self.rect.y + PLAYER_HEIGHT > HEIGHT:
-            print("I am off the bottom of the screen")
-            self_remainder = int((self.rect.y + PLAYER_HEIGHT) - HEIGHT)
+    #     if self.rect.y + PLAYER_HEIGHT > HEIGHT:
+    #         print("I am off the bottom of the screen")
+    #         self_remainder = int((self.rect.y + PLAYER_HEIGHT) - HEIGHT)
 
-        if (self.rect.y) < 0:
-            print("I am off the top of the screen")
-            self_remainder = int((self.rect.y + PLAYER_HEIGHT) - HEIGHT)'''
+    #     if (self.rect.y) < 0:
+    #         print("I am off the top of the screen")
+    #         self_remainder = int((self.rect.y + PLAYER_HEIGHT) - HEIGHT)
+
 
 
 # player class
@@ -54,13 +55,14 @@ class Player(Sprite):
         self.image.fill(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)
-        self.pos = vec(WIDTH/2, HEIGHT/2)
+        self.pos = vec(WIDTH/2,HEIGHT/2)
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.cofric = 0.1
         self.canjump = False
         self.fragment = vec((self.rect.x + PLAYER_WIDTH - WIDTH), (self.pos.y + HEIGHT) - HEIGHT)
         
+
     def input(self):
         keystate = pg.key.get_pressed()
 
@@ -120,8 +122,8 @@ class Player(Sprite):
 
         # if (self.rect.x + PLAYER_WIDTH) > WIDTH:
         #     print(" I am off the right")
-        #     self.pos.x = 0
         #     self_remainder = int((self.rect.x + PLAYER_WIDTH) % WIDTH)
+        #     self.rect.x = -self_remainder
         #     print(f"self remainder is {self_remainder}")
         #     # Sprite.__init__(self)
         #     wrap_around = True
@@ -130,21 +132,21 @@ class Player(Sprite):
             print("I am off the left")
             self_remainder = int(PLAYER_WIDTH % ((self.rect.x + PLAYER_WIDTH) % WIDTH))
             print(f"self remainder is {self_remainder}")
-            self.pos.x = WIDTH
+            self.rect.x = WIDTH - self_remainder
             print(f"x posItions is {self.rect.x}")
 
         if self.rect.y + PLAYER_HEIGHT > HEIGHT:
             print("I am off the bottom of the screen")
             self_remainder = int((self.rect.y + PLAYER_HEIGHT) % HEIGHT)
             print(f"self remainder is {self_remainder}")
-            self.pos.y = 0
+            self.rect.y = -self_remainder
             print(f"y posItions is {self.rect.y}")
 
         # if (self.rect.y) < 0:
         #     print("I am off the top of the screen")
         #     self_remainder = int(PLAYER_HEIGHT % ((self.rect.y + PLAYER_HEIGHT) % HEIGHT))
         #     print(f"self remainder is {self_remainder}")
-        #     self.pos.y = HEIGHT
+        #     self.rect.y = HEIGHT + self_remainder
         #     print(f"y posItions is {self.rect.y}")
 
         # ///////////////////////////////////////////////////////
@@ -182,6 +184,21 @@ class Player(Sprite):
         self.pos += self.vel + 0.5 * self.acc
         self.rect.center = self.pos
 
+class Partial(Sprite):
+    def __init__(self, Player):
+        Sprite.__init__(self)
+        self.image = pg.Surface((50,50))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.rect.center = (WIDTH/2, HEIGHT/2)
+        self.pos = vec(801,801)
+        self.vel = vec(0,0)
+        self.acc = vec(0,0)
+        self.cofric = 0.1
+        if Player.rect.x > 750 < 850:
+            self.pos = vec(WIDTH/2, HEIGHT/2)
+           
+       
 
 #  mob class
 # //////////////////////////////////////////////////////////
@@ -221,7 +238,7 @@ class Mob(Sprite):
         self.x, self.y = 0, 0
         print(self.vel)
         self.rect.x = randint(-1,1)
-        self.pos.y = randint(-1,1)
+        self.rect.y = randint(-1,1)
 
     def update(self):
         self.inbounds()

@@ -32,7 +32,7 @@ clock = pg.time.Clock()
 all_sprites = pg.sprite.Group()
 enemies = pg.sprite.Group()
 player = Player()
-# player_wrap = Player_Wrap()
+partial = Partial(player)
 
 enemy1 = Mob(80, 80, RED)
 # enemy2 = Mob(100, 100, BLACK)
@@ -41,9 +41,6 @@ all_sprites.add(enemy1)
 # all_sprites.add(enemy2)
 all_sprites.add(player)
 # all_sprites.add(player_wrap)
-
-
-
 
 # game loop
 
