@@ -23,7 +23,7 @@ def get_mouse_now():
 # init pg and create window
 pg.init()
 
-# init sound mixer
+# init sound mixers99
 pg.mixer.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 pg.display.set_caption("My first game...")
@@ -31,16 +31,22 @@ clock = pg.time.Clock()
 
 all_sprites = pg.sprite.Group()
 enemies = pg.sprite.Group()
-player = Player()
-partial = Partial(player)
 
-enemy1 = Mob(80, 80, RED)
-# enemy2 = Mob(100, 100, BLACK)
+player = Player(WIDTH/2,HEIGHT/2)
+player_left = Player(player.pos.x - WIDTH, player.pos.y,)
+player_right = Player(player.pos.x + WIDTH, player.pos.y,)
+player_top = Player(player.pos.x, player.pos.y + HEIGHT)
+player_bottom = Player(player.pos.x, player.pos.y - HEIGHT)
 
-all_sprites.add(enemy1)
-# all_sprites.add(enemy2)
-all_sprites.add(player)
-# all_sprites.add(player_wrap)
+
+
+all_sprites.add(player, player_left, player_right, player_top, player_bottom)
+# all_sprites.adaaaaaaaaad(partial)
+
+for i in range(0,20):
+    m = Mob(randint(30,90), randint(30,90), (randint(0,255),randint(0,255),randint(0,255)))
+    all_sprites.add(m)
+    enemies.add(m)
 
 # game loop
 
@@ -56,6 +62,7 @@ while RUNNING:
     # print(get_mouse_now())
     ### update section of game loop (if updates take longer the 1/30th of a second, you will get laaaaag...)
     all_sprites.update()
+    enemies.update()
 
 
     blocks_hit_list = pg.sprite.spritecollide(player, enemies, True)
