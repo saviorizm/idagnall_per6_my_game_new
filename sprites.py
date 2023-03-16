@@ -77,8 +77,6 @@ class Player(Sprite):
         CURRENT_TIME = pg.time.get_ticks()
         # if CURRENT_TIME 
 
-
-
     def color_change(self):
         while color_state:
             CURRENT_TIME = pg.time.get_ticks()
@@ -88,12 +86,10 @@ class Player(Sprite):
             if CURRENT_TIME > 3000:
                 self.image.fill(COLOR_LIST[index])
 
-                index +=1
+                # index +=1
             # self.current_color = COLOR_LIST % len(COLOR_LIST)
-
         else:
             self.image.fill(BLACK)
-
 
     def update(self):
         self.inbounds()
@@ -107,46 +103,51 @@ class Player(Sprite):
 
 #  mob class
 class Mob(Sprite):
-    def __init__(self,width,height,color):
+    def __init__(self,width,height, color):
         Sprite.__init__(self)
         self.width = width
         self.height = height
         self.image = pg.Surface((self.width,self.height))
-        self.image.fill(RED)
+        self.color = color
+        self.image.fill(self.color)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)
-        self.color = color
         self.pos = vec(WIDTH/2, HEIGHT/2)
-        self.vel = vec(0,0)
-        self.acc = vec(0,0)
-        self.cofric = 0.1
-    # ...
+        self.vel = vec(randint(1,5),randint(1,5))
+        self.acc = vec(1,1)
+        self.cofric = 0.01
+    ...
     def inbounds(self):
-        if self.rect.x > WIDTH:
-            print(" I am off the right side of the screen")
-            self.rect.x = 0
+        if self.rect.x > WIDTH - PLAYER_WIDTH:
+            self.vel.x *= -1
+            # self.acc = self.vel * -self.cofric
+        if self.rect.x < 0 + PLAYER_WIDTH:
+            self.vel.x *= -1
+            # self.acc = self.vel * -self.cofric
+        if self.rect.y < 0 - PLAYER_HEIGHT:
+            self.vel.y *= -1
+            # self.acc = self.vel * -self.cofric
+        if self.rect.y > HEIGHT - PLAYER_HEIGHT:
+            self.vel.y *= -1
+    #         # self.acc = self.vel * -self.cofric
 
-        if self.rect.x < -75:
-            print("I am off the left side of the screen")
-            self.rect.x = WIDTH
+    # def inbounds(self):
+    #     if self.rect.x > WIDTH:
+    #         self.pos.x = 0
 
-        if self.rect.y > HEIGHT:
-            print("I am off the bottom of the screen")
-            self.pos.y = 0
+    #     if self.rect.x < 0:
+    #         self.pos.x = WIDTH
 
-        if self.rect.y < -75:
-            print("I am off the top of the screen")
-            self.pos.y = HEIGHT
-        
-    def behavior(self):
-        print(self.vel)
-        self.pos += self.vel
-        self.rect.center = self.pos
+    #     if self.rect.y < 0:
+    #         self.pos.y = HEIGHT
+
+    #     if self.rect.y > HEIGHT:
+    #         self.pos.y = 0
+
 
     def update(self):
         self.inbounds()
         # self.pos.x += self.vel.x
         # self.pos.y += self.vel.y
         self.pos += self.vel
-
         self.rect.center = self.pos

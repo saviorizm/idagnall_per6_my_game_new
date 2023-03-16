@@ -4,7 +4,7 @@
 
 # import libs
 import pygame as pg
-import random
+from random import randint
 import os
 # import settings 
 from settings import *
@@ -37,16 +37,24 @@ player_left = Player(player.pos.x - WIDTH, player.pos.y,)
 player_right = Player(player.pos.x + WIDTH, player.pos.y,)
 player_top = Player(player.pos.x, player.pos.y + HEIGHT)
 player_bottom = Player(player.pos.x, player.pos.y - HEIGHT)
-
-
-
 all_sprites.add(player, player_left, player_right, player_top, player_bottom)
-# all_sprites.adaaaaaaaaad(partial)
+print(f"enemies is {enemies}")
 
+# creates a for loop that creates 20 mobs
+# 
 for i in range(0,20):
-    m = Mob(randint(30,90), randint(30,90), (randint(0,255),randint(0,255),randint(0,255)))
+    # instantiate mobs
+    m = Mob(randint(30,90), randint(30, 90), (255,0,0))
+    # add enemies to enemies and all_sprites...
+    # enemies.add(m)
     all_sprites.add(m)
-    enemies.add(m)
+
+print(f"enemies is {enemies}")
+
+mob1 = Mob(10,10,RED)
+all_sprites.add(mob1)
+# enemies.add(mob1)
+print(f"enemies is {enemies}")
 
 # game loop
 
@@ -61,8 +69,9 @@ while RUNNING:
             # dbreak
     # print(get_mouse_now())
     ### update section of game loop (if updates take longer the 1/30th of a second, you will get laaaaag...)
-    all_sprites.update()
     enemies.update()
+    all_sprites.update()
+
 
 
     blocks_hit_list = pg.sprite.spritecollide(player, enemies, True)
