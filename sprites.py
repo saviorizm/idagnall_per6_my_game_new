@@ -16,8 +16,9 @@ color_state = False
 # player class
 
 class Player(Sprite):
-    def __init__(self,X,Y):
+    def __init__(self,X,Y,game):
         Sprite.__init__(self)
+        self.game = game
         self.image = pg.Surface((50,50))
         self.image.fill(BLACK)
         self.rect = self.image.get_rect()
@@ -77,6 +78,8 @@ class Player(Sprite):
         CURRENT_TIME = pg.time.get_ticks()
         # if CURRENT_TIME 
 
+    def jump(self):
+        hits = pg.spritecollide(self, self.game.platforms, False)
     def color_change(self):
         while color_state:
             CURRENT_TIME = pg.time.get_ticks()
@@ -112,23 +115,23 @@ class Mob(Sprite):
         self.image.fill(self.color)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)
-        self.pos = vec(WIDTH/2, HEIGHT/2)
+        self.pos = vec(600,600)
         self.vel = vec(randint(1,5),randint(1,5))
         self.acc = vec(1,1)
         self.cofric = 0.01
     ...
     def inbounds(self):
         if self.rect.x > WIDTH - PLAYER_WIDTH:
-            self.vel.x *= -1
+            self.vel.x *= -1.3
             # self.acc = self.vel * -self.cofric
         if self.rect.x < 0 + PLAYER_WIDTH:
-            self.vel.x *= -1
+            self.vel.x *= -1.3
             # self.acc = self.vel * -self.cofric
         if self.rect.y < 0 - PLAYER_HEIGHT:
-            self.vel.y *= -1
+            self.vel.y *= -1.3
             # self.acc = self.vel * -self.cofric
         if self.rect.y > HEIGHT - PLAYER_HEIGHT:
-            self.vel.y *= -1
+            self.vel.y *= -1.3
     #         # self.acc = self.vel * -self.cofric
 
     # def inbounds(self):
