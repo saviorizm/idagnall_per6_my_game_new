@@ -1,15 +1,11 @@
 
 import pygame as pg
-
 from pygame.sprite import Sprite
-
 from settings import *
-
 from random import randint
 from time import sleep
 
 vec = pg.math.Vector2
-wrap_around = False
 color_state = False
 
 
@@ -57,21 +53,33 @@ class Player(Sprite):
     def inbounds(self):
         global wrap_around
 
-        if self.rect.x > self.start[0] + WIDTH:
-            print("resetting from right")
-            self.pos.x = self.start[0]
+        # if self.rect.x > self.start[0] + WIDTH:
+        #     print("resetting from right")
+        #     self.pos.x = self.start[0]
 
-        if self.rect.x < self.start[0] - WIDTH:
-            print("resetting from left")
-            self.pos.x = self.start[0]
+        # if self.rect.x < self.start[0] - WIDTH:
+        #     print("resetting from left")
+        #     self.pos.x = self.start[0]
 
-        if self.rect.y > self.start[1] + HEIGHT:
-            print("resetting from bottom")
-            self.pos.y = self.start[1]
+        # if self.rect.y > self.start[1] + HEIGHT:
+        #     print("resetting from bottom")
+        #     self.pos.y = self.start[1]
 
-        if self.rect.y < self.start[1] - HEIGHT:
-            print('resetting from top')
-            self.pos.y = self.start[1]
+        # if self.rect.y < self.start[1] - HEIGHT:
+        #     print('resetting from top')
+        #     self.pos.y = self.start[1]
+        if self.rect.x > WIDTH - PLAYER_WIDTH:
+            self.vel.x *= -1.3
+            # self.acc = self.vel * -self.cofric
+        if self.rect.x < 0 + PLAYER_WIDTH:
+            self.vel.x *= -1.3
+            # self.acc = self.vel * -self.cofric
+        if self.rect.y < 0 - PLAYER_HEIGHT:
+            self.vel.y *= -1.3
+            # self.acc = self.vel * -self.cofric
+        if self.rect.y > HEIGHT - PLAYER_HEIGHT:
+            self.vel.y *= -1.3
+    #         # self.acc = self.vel * -self.cofric
         
     def wait(self,time):
         ms_time = time *1000
@@ -93,15 +101,26 @@ class Player(Sprite):
             # self.current_color = COLOR_LIST % len(COLOR_LIST)
         else:
             self.image.fill(BLACK)
+    def m_collide(self):
+            hits = pg.sprite.spritecollide(self, self.game.enemies, True) 
+            if hits:
+                global SCORE
+                print("you collided w an enemy")
+                self.game.score += 1
+                print(SCORE)
 
     def update(self):
+        # self.mob_collide()
         self.inbounds()
-        self.color_change()
-        self.acc = self.vel * PLAYER_FRICTION
+        # self.acc = (0, PLAYER_GRAV)
+        self.acc = vec(0, PLAYER_GRAV)
         self.input()
+        # self.acc = self.vel * PLAYER_FRICTION
+        self.acc.x = self.vel.x * PLAYER_FRICTION
         self.vel += self.acc
         self.pos += self.vel + 0.5 * self.acc
         self.rect.center = self.pos
+
            
 
 #  mob class
@@ -154,3 +173,17 @@ class Mob(Sprite):
         # self.pos.y += self.vel.y
         self.pos += self.vel
         self.rect.center = self.pos
+
+class Platform(Sprite):
+    def __init__(self, x, y, width, height, color, variant):
+        Sprite.__init__(self)
+        self.width = width
+        self.height = height
+        self.image = pg.Surface((self.width,self.height))
+        self.color = color
+        self.image.fill(self.color)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.variant = variant
+
