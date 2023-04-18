@@ -1,5 +1,6 @@
+from random import randint
 WIDTH = 1000
-HEIGHT = 900    
+HEIGHT = 800    
 
 CENTER = (WIDTH/2, HEIGHT/2)
 
@@ -10,6 +11,7 @@ PLAYER_ACC = 1
 PLAYER_FRICTION = -0.1
 PLAYER_GRAV = 0.8
 PLAYER_JUMP = 20
+PLAYER_JUMP_COOLDOWN = 1000
 
 MOB_ACC = 0
 MOB_FRICTION = -0.2
@@ -40,3 +42,10 @@ PLATFORM_LIST = [(0, HEIGHT - 40, WIDTH, 40, (200,200,200), "normal"),
                  (125, HEIGHT - 350, 100, 5, (200,200,200), "disappearing "),
                  (350, 200, 100, 20, (200,200,200), "normal"),
                  (175, 100, 50, 20, (200,200,200), "normal")]
+
+O1WIDTH = randint(50,WIDTH//3 - PLAYER_WIDTH)
+O1HEIGHT = randint(50,HEIGHT//3 - PLAYER_HEIGHT)
+O2WIDTH = randint(50,WIDTH//3*2 - PLAYER_WIDTH)
+O2HEIGHT = randint(50,HEIGHT//3 - PLAYER_HEIGHT)
+O3WIDTH = randint(50,WIDTH - PLAYER_WIDTH)
+O3HEIGHT = randint(50,HEIGHT//3 - PLAYER_HEIGHT)
