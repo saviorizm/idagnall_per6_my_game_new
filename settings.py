@@ -34,7 +34,7 @@ SCORE = 0
 PAUSED = False
 
 
-FPS = 61
+FPS = 60
 RUNNING = True
 # Starting platforms
 PLATFORM_LIST = [(0, HEIGHT - 40, WIDTH, 40, (200,200,200), "normal"),

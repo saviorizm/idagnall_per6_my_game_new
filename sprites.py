@@ -39,11 +39,8 @@ class Player(Sprite):
             self.acc.x = PLAYER_ACC
             # print("key d is pressed")
             
-        # if keystate[pg.K_w]:
-        #     self.jump()
-            
-        # if keystate[pg.K_s]:
-        #     self.acc.y = PLAYER_ACC
+        if keystate[pg.K_w]:
+            self.jump()
             
         if keystate[pg.K_c]:
             self.pos = self.start
@@ -52,28 +49,29 @@ class Player(Sprite):
         if keystate[pg.K_r]:
             global color_state
             color_state = not color_state
+        
 
     def inbounds(self):
         
         if self.rect.x >= WIDTH - PLAYER_WIDTH:
             # self.vel.x = -1
-            print("i am off the right side")
+            # print("i am off the right side")
             self.vel.x = 0
             self.pos.x = WIDTH - PLAYER_WIDTH/2
 
         if self.rect.x <= 0:
             # self.vel.x = 1
-            print("i am off the left")
+            # print("i am off the left")
             self.vel.x = 0
             self.pos.x = PLAYER_WIDTH/2
 
         if self.rect.y <= 0:
-             print("I am off the top")
+            #  print("I am off the top")
              self.vel.y = 0
              self.pos.y = PLAYER_HEIGHT/2
 
         if self.rect.y > HEIGHT - PLAYER_HEIGHT:
-            print("I am off the bottom")
+            # print("I am off the bottom")
             self.vel.y = 0
             self.pos.y = HEIGHT
 
@@ -88,18 +86,14 @@ class Player(Sprite):
         global last_call_time
 
         if keystate[pg.K_w]:
-            # if self.vel.y == 0:
-                print(f"last jump call time is {last_call_time}")
-                
-                if pg.time.get_ticks() - int(last_call_time) > PLAYER_JUMP_COOLDOWN:
-                    self.vel.y = PLAYER_JUMP
-                    self.rect.x += 1
-                    hits = pg.sprite.spritecollide(self, self.game.platforms, False)
-                    self.rect.x -= 1
-                    # if hits:
-                    self.vel.y = -PLAYER_JUMP
+            if pg.time.get_ticks() - last_call_time > PLAYER_JUMP_COOLDOWN:
+                last_call_time = pg.time.get_ticks()
+                self.vel.y = -PLAYER_JUMP
+                self.rect.x += 1
+                hits = pg.sprite.spritecollide(self, self.game.platforms, False)
+                self.rect.x -= 1
+                if not hits:
                     print(f"last jump call time is {last_call_time}")
-
 
     def color_change(self):
         while color_state:
@@ -122,6 +116,39 @@ class Player(Sprite):
                 self.game.score += 1
                 print(SCORE)
 
+    def wall_stick(self):
+        keystate = pg.key.get_pressed()
+        if self.pos.x - WIDTH/2 == 0:
+            if keystate[pg.K_a]:
+                if self.wall_stick_time is None:
+                    self.wall_stick_time = pg.time.get_ticks()
+                elif pg.time.get_ticks() - self.wall_stick_time > 1700:
+                    print("falling off the wall")
+                    keystate[pg.K_a] = 0
+                    self.wall_stick_time = None
+                # else:
+                #     self.pos.x = WIDTH/2
+
+           
+
+    def wall_bounce(self):
+        keystate = pg.key.get_pressed()
+        if self.pos.x - WIDTH/2 == 0:
+            if keystate[pg.K_RIGHT]:
+                keystate = pg.key.get_pressed()
+                global last_call_time
+        
+                if keystate[pg.K_w]:
+                    if pg.time.get_ticks() - last_call_time > PLAYER_JUMP_COOLDOWN:
+                        last_call_time = pg.time.get_ticks()
+                        self.vel.y = -PLAYER_JUMP + 15
+                        self.vel.x = PLAYER_JUMP + 15
+                        self.rect.x += 1
+                        hits = pg.sprite.spritecollide(self, self.game.platforms, False)
+                        self.rect.x -= 1
+                        if not hits:
+                            print(f"last jump call time is {last_call_time}")
+
     def update(self):
         self.acc = vec(0, PLAYER_GRAV)
         self.acc.x = self.vel.x * PLAYER_FRICTION
@@ -131,7 +158,7 @@ class Player(Sprite):
         self.pos += self.vel + 0.5 * self.acc
         self.rect.midbottom = self.pos
 
-           
+    
 
 #  mob class
 class Mob(Sprite):
@@ -190,14 +217,26 @@ class Mob(Sprite):
         self.rect.center = self.pos
 
 class Platform(Sprite):
-    def __init__(self,width, height,xpos,ypos, color = "WHITE", variant = "normal"):
+    def __init__(self, width, height, xpos, ypos, color="WHITE", variant="normal",scroll = True):
         Sprite.__init__(self)
         self.width = width
         self.height = height
-        self.image = pg.Surface((self.width,self.height))
+        self.image = pg.Surface((self.width, self.height))
         self.color = color
         self.image.fill(self.color)
         self.rect = self.image.get_rect()
         self.rect.x = xpos
         self.rect.y = ypos
         self.variant = variant
+        self.scroll = scroll
+
+    def scrolling(self):
+        # scroll the platforms downwards
+        if self.scroll:
+            self.rect.y = self.rect.y + 1
+            if self.rect.y > HEIGHT:
+                self.kill()
+        # add new platforms
+        
+    def update(self):
+        self.scrolling()

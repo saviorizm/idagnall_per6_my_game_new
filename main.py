@@ -1,12 +1,11 @@
-# file created by saviorizm - Ian Dagnall
-
+# This file was created by Saviorizm 
 # import libs
 import pygame as pg
-from random import randint
 import os
 # import settings 
 from settings import *
 from sprites import *
+# from pg.sprite import Sprite
 
 # set up assets folders
 game_folder = os.path.dirname(__file__)
@@ -23,6 +22,7 @@ class Game:
         pg.display.set_caption("my game")
         self.clock = pg.time.Clock()
         self.running = True
+        self.paused = False
         print(self.screen)
     def new(self):
         # starting a new game
@@ -37,32 +37,36 @@ class Game:
 
         platform2 = Platform(O2WIDTH,O2HEIGHT,randint(0,O2WIDTH),randint(WIDTH//3,WIDTH//3*2-O2HEIGHT),RED)
 
-        platform3 = Platform(O3WIDTH,O3HEIGHT,randint(0,O3WIDTH),randint(WIDTH//3*2,WIDTH-O3HEIGHT),GREEN)
-
+        platform3 = Platform(200,20, WIDTH/2, HEIGHT/2,WHITE)
         platformbase = Platform(WIDTH,25,0,HEIGHT-25)
 
         self.all_sprites.add(self.player,platform1,platform2,platform3,platformbase)
         self.platforms.add(platform1,platform2,platform3,platformbase)
-        # self.all_sprites.add(self.player)
-        # for plat in PLATFORM_LIST:
-        #     p = Platform(*plat)
-        #     self.all_sprites.add(p)a
-        #     platforms.add(p)
-
+        def draw_new_platform(self):
+            platformnew = Platform(randint(50,WIDTH//3 - PLAYER_WIDTH),randint(50,HEIGHT//3 - PLAYER_HEIGHT),randint(0,O1WIDTH),0,RED)
+        if len(self.platforms) == 3:
+            self.draw_new_platform()
         for i in range(0,10):
             m = Mob(20,20,(0,255,0))
             self.all_sprites.add(m)
             self.enemies.add(m)
-
         self.run()
+
     def run(self):
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
             self.events()
-            self.update()
             self.draw()
-    
+            if not self.paused:
+                self.update()
+
+
+    def pause(self):
+        self.paused = True
+    def unpause(self):
+        self.paused = False
+
     def events(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -71,58 +75,74 @@ class Game:
                 self.running = False
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
-                    self.self.jump()
-    def collision(self):
-        if self.player.vel.y > 0:
-            collided_platforms = pg.sprite.spritecollide(self.player, self.platforms, False)
+                    self.player.jump()
+                if event.key == pg.K_p: # pause the game if the 'p' key is pressed
+                    self.pause()
+                if event.key == pg.K_u: # unpause the game if the 'u' key is pressed
+                    self.unpause()
 
-        for platform in collided_platforms:
-            keystate = pg.key.get_pressed()
-            # Calculate the penetration depth in x and y directions
-            delta_x_left = self.player.rect.right - platform.rect.left
-            delta_x_right = platform.rect.right - self.player.rect.left
-            delta_y_top = self.player.rect.bottom - platform.rect.top
-            delta_y_bottom = platform.rect.bottom - self.player.rect.top
-            # Check for the smallest penetration depth
-            min_delta_x = min(abs(delta_x_left), abs(delta_x_right))
-            min_delta_y = min(abs(delta_y_top), abs(delta_y_bottom))
-            if min_delta_x < min_delta_y:
-                Player collides on the left side of the obstacle
-                if abs(delta_x_left) == min_delta_x:
-                    self.player.vel.x = 0
-                    self.player.pos.x = platform.rect.left - PLAYER_WIDTH/2
-                    if keystate[pg.K_d]:
-                        self.player.vel.y += -PLAYER_GRAV*10
-                    if keystate[pg.K_w]:
-                        self.jump()
-                # Player collides on tahe right side of the obstacle
-                # else:
-                    self.player.vel.x = 0
-                    self.player.pos.x = platform.rect.right + PLAYER_WIDTH/2
-                    print("top code")
-                    if keystate[pg.K_a]:
-                        self.player.vel.y += -PLAYER_GRAV*10
-                        print("bottom")
-                    # if keystate[pg.K_w]:
-                    #     self.player.jump(-50)
-            else:
-                # Player collides on the top side of the obstacle
-                if abs(delta_y_top) == min_delta_y:
-                    self.player.vel.y = 0
-                    self.player.pos.y = platform.rect.top - PLAYER_WIDTH/2
-                # Player collides on the bottom side of the obstacle
-                else:
-                    self.player.vel.y = 0
-                    self.player.pos.y = platform.rect.bottom + PLAYER_WIDTH/2
+    def generate_new_platform(self):
+        width = randint(50, WIDTH//3 - (PLAYER_WIDTH+ 20))
+        height = randint(50, HEIGHT//3 - (PLAYER_HEIGHT+20))
+        x = randint(0, WIDTH - width)
+        color = (randint(0, 255), randint(0, 255), randint(0, 255))
+        platform = Platform(width, height, x, 0, color)
+        self.all_sprites.add(platform)
+        self.platforms.add(platform)
+
+    def game_over(self):
+        if self.player.pos.y >= HEIGHT:
+            self.pause()
+            print("game is paused")
+            self.draw_text("GAME OVER", 20, WHITE, WIDTH/2, HEIGHT/2)
+            self.draw_text("Press 'r' to restart", 20, WHITE, WIDTH/2, HEIGHT/2 + 50)
+            self.draw_text("Press 'x' to QUIT", 20, WHITE, WIDTH/2, HEIGHT/2 + 100)
+            print("the text is drawn")
+            while self.paused:
+                for event in pg.event.get():
+                    if event.type == pg.KEYDOWN:
+                        if event.key == pg.K_r:
+                            self.unpause()
+                            self.new()
+                        if event.key == pg.K_x:
+                           pg.quit()
+
 
     def update(self):
-        self.all_sprites.update()
-        self.collision()
+        self.all_sprites.update() 
+        self.game_over()
+        # if the player is falling
+        if self.player.vel.y > 0:
+            hits = pg.sprite.spritecollide(self.player, self.platforms, False)
+            if hits:
+                # disappearing platform
+                self.player.standing = True
+                if hits[0].variant == "start_platform":
+                    global last_call_time
+                    # make starting platofmr disappear after 3 seconds
+                    if pg.time.get_ticks() -last_call_time > 3000:
+                        print("killing start platform")
+                        hits[0].kill()
+
+                elif hits[0].variant == "bouncey":
+                    self.player.pos.y = hits[0].rect.top
+                    self.player.vel.y = -PLAYER_JUMP
+                else:
+                    self.player.pos.y = hits[0].rect.top
+                    self.player.vel.y = 0
+            else:
+                self.player.standing = False
+        # generate new platform if number of platforms drops to 2
+        if len(self.platforms) == 2:
+            self.generate_new_platform()
+        
+
     def draw(self):
         self.screen.fill(BLUE)
         self.all_sprites.draw(self.screen)
-        # is this a method or a function?
         pg.display.flip()
+
+
     def draw_text(self, text, size, color, x, y):
         font_name = pg.font.match_font('arial')
         font = pg.font.Font(font_name, size)
@@ -130,9 +150,14 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x,y)
         self.screen.blit(text_surface, text_rect)
+        pg.display.flip()
+
     def get_mouse_now(self):
         x,y = pg.mouse.get_pos()
         return (x,y)
+    
+    
+    
 
 # instantiate the game class...
 g = Game()
@@ -140,6 +165,5 @@ g = Game()
 # kick off the game loop
 while g.running:
     g.new()
-    
 
 pg.quit()
