@@ -10,7 +10,7 @@ import os
 vec = pg.math.Vector2
 game_over = False
 last_call_time = 0
-# folders
+# set up assets folders
 game_folder = os.path.dirname(__file__)
 img_folder = os.path.join(game_folder, 'images')
 print(img_folder)
@@ -31,7 +31,7 @@ class Player(Sprite):
         self.acc = vec(0,0)
         self.cofric = 0.1
         self.fragment = vec((self.rect.x + PLAYER_WIDTH - WIDTH), (self.pos.y + HEIGHT) - HEIGHT)
-        # tracks the inputs from the player
+    # method that tracks the inputs from the player
     def input(self):
         keystate = pg.key.get_pressed()
         if keystate[pg.K_a]:
@@ -114,6 +114,7 @@ class Player(Sprite):
                     keystate[pg.K_a] = 0
                     self.wall_stick_time = None
     # update loop
+    # handles gravity, other physics and character handling
     def update(self):
         self.acc = vec(0, PLAYER_GRAV)
         self.acc.x = self.vel.x * PLAYER_FRICTION
@@ -137,20 +138,12 @@ class Bomb(Sprite):
         self.vel = vec(randint(1,5),randint(1,5))
         self.acc = vec(1,1)
         self.cofric = 0.01
-    def inbounds(self):
-        if self.rect.x > WIDTH:
-            self.vel.x *= -1
-        if self.rect.x < 0:
-            self.vel.x *= -1
-        # if self.rect.y < 0:
-        #     self.vel.y *= -1
-        if self.rect.y > HEIGHT:
-            self.vel.y *= -1
+    # scroll the platforms downwards
     def scrolling(self):
-        # scroll the platforms downwards
         self.rect.y = self.rect.y + 6
         if self.rect.y > HEIGHT:
             self.kill()
+    # update loop handles scrolling
     def update(self):
         self.scrolling()
 
